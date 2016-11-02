@@ -388,6 +388,8 @@ sub _process_details_page {
     my( $hostfilter, $servicefilter, undef) = Thruk::Utils::Status::do_filter($c);
     return 1 if $c->stash->{'has_error'};
 
+    $c->stash->{'table_columns'}->{"dfl_"} = Thruk::Utils::Status::get_service_columns($c);
+
     # do the sort
     my $sorttype   = $c->req->parameters->{'sorttype'}   || 1;
     my $sortoption = $c->req->parameters->{'sortoption'} || 1;
@@ -427,6 +429,7 @@ sub _process_details_page {
     } else {
         push @{$extra_columns}, 'long_plugin_output';
     }
+    push @{$extra_columns}, 'contacts';
 
     # get all services
     my $services = $c->{'db'}->get_services( filter => [ Thruk::Utils::Auth::get_auth_filter( $c, 'services' ), $servicefilter ], sort => { $backend_order => $sortoptions->{$sortoption}->[0] }, pager => 1, columns => $columns, extra_columns => $extra_columns  );
@@ -452,7 +455,7 @@ sub _process_details_page {
         $c->stash->{'template'} = 'excel/status_detail.tt';
         return $c->render_excel();
     }
-    if ( $view_mode eq 'json' ) {
+    elsif ( $view_mode eq 'json' ) {
         # remove unwanted colums
         if($columns) {
             for my $s (@{$services}) {
@@ -501,6 +504,8 @@ sub _process_hostdetails_page {
     #my( $hostfilter, $servicefilter, $groupfilter )...
     my( $hostfilter, undef, undef ) = Thruk::Utils::Status::do_filter($c);
     return 1 if $c->stash->{'has_error'};
+
+    $c->stash->{'table_columns'}->{"dfl_"} = Thruk::Utils::Status::get_host_columns($c);
 
     # do the sort
     my $sorttype   = $c->req->parameters->{'sorttype'}   || 1;
@@ -993,6 +998,9 @@ sub _process_combined_page {
 
     my $view_mode = $c->req->parameters->{'view_mode'} || 'html';
 
+    $c->stash->{'table_columns'}->{"hst_"} = Thruk::Utils::Status::get_host_columns($c);
+    $c->stash->{'table_columns'}->{"svc_"} = Thruk::Utils::Status::get_service_columns($c);
+
     # services
     my $sorttype   = $c->req->parameters->{'sorttype_svc'}   || 1;
     my $sortoption = $c->req->parameters->{'sortoption_svc'} || 1;
@@ -1018,6 +1026,7 @@ sub _process_combined_page {
     } else {
         push @{$extra_columns}, 'long_plugin_output';
     }
+    push @{$extra_columns}, 'contacts';
 
     my $services            = $c->{'db'}->get_services( filter => [ Thruk::Utils::Auth::get_auth_filter( $c, 'services' ), $servicefilter ],
                                                         sort   => { $order => $sortoptions->{$sortoption}->[0] },

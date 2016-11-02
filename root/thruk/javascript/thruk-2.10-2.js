@@ -2177,6 +2177,66 @@ function fetch_long_plugin_output(td, host, service, backend, escape_html) {
     }
 }
 
+// make the columns sortable
+function initStatusTableColumnSorting(id) {
+    if(!has_jquery_ui) {
+        load_jquery_ui(function() {
+            initStatusTableColumnSorting(id);
+        });
+        return;
+    }
+    jQuery('#'+id+' tbody').sortable({
+        update: function( event, ui ) {
+            /* drag/drop changes the checkbox state, so just toggle it back */
+            ui.item[0].childNodes[1].onclick();
+        }
+    });
+}
+
+// apply status table columns
+function updateStatusColumns(id) {
+    console.log(id);
+    var table = jQuery('.'+id+'_table')[0];
+    var firstRow = table.rows[0];
+    jQuery('.'+id+'_col').each(function(i, el) {
+        if(!jQuery(firstRow.cells[i]).hasClass("col_"+el.value)) {
+            // need to reorder column
+            var targetIndex = i;
+            var sourceIndex;
+            jQuery(firstRow.cells).each(function(j, c) {
+                if(jQuery(c).hasClass("col_"+el.value)) {
+                    sourceIndex = j;
+                    return false;
+                }
+            });
+            if(sourceIndex) {
+                jQuery(table.rows).each(function(j, row) {
+                    if(row.cells[sourceIndex]) {
+                        var cell = row.removeChild(row.cells[sourceIndex]);
+                        row.insertBefore(cell, row.cells[targetIndex]);
+                    }
+                });
+            }
+        }
+
+        // check visibility of this column
+        if(el.checked) {
+            jQuery(table.rows).each(function(j, row) {
+                console.log(row.cells[i]);
+                if(row.cells[i]) {
+                    row.cells[i].style.display = "";
+                }
+            });
+        } else {
+            jQuery(table.rows).each(function(j, row) {
+                if(row.cells[i]) {
+                    row.cells[i].style.display = "none";
+                }
+            });
+        }
+    });
+}
+
 /*******************************************************************************
 *        db        ,ad8888ba, 888888888888 88   ,ad8888ba,   888b      88
 *       d88b      d8"'    `"8b     88      88  d8"'    `"8b  8888b     88
@@ -4170,6 +4230,7 @@ function new_filter(cloneObj, parentObj, btnId) {
   hideBtn = document.getElementById(pane_prefix+new_prefix + 'filter_button_mini');
   if(hideBtn) { hideElement( hideBtn); }
   hideElement(pane_prefix + new_prefix + 'btn_accept_search');
+  hideElement(pane_prefix + new_prefix + 'btn_columns');
   showElement(pane_prefix + new_prefix + 'btn_del_search');
 
   hideBtn = document.getElementById(pane_prefix + new_prefix + 'filter_title');

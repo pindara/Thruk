@@ -1,8 +1,34 @@
 ﻿[% PROCESS _blocks.tt %]
 [% PROCESS custom_perf_bar_adjustments.tt %]
 
-      <table border="0" class='status' width="100%" id="hoststatusTable" onmouseout='reset_all_hosts_and_services();'>
-        <tr>
+    <input type="image" src="[% url_prefix %]themes/[% theme %]/images/config.png" style="display: none; vertical-align: bottom; position: absolute; left: 10px;" name="columns" id="[% paneprefix %]_btn_columns_hover" alt="column editor" onclick="initStatusTableColumnSorting('[% paneprefix %]_columns_table'); toggleElement('[% paneprefix %]_columns', undefined, true); return false;" onmouseover="jQuery('#[% paneprefix %]_btn_columns_hover').show()"  onmouseout="jQuery('#[% paneprefix %]_btn_columns_hover').hide()">
+    <div class="filter_pane" style="visibility:hidden; left: 50px;" id="[% paneprefix %]_columns">
+    <div class="shadow"><div class="shadowcontent">
+    <table border="1" class='filter' cellspacing="0" cellpadding="0">
+      <tr>
+        <td class='filter' style="width: 140px;">
+          <table border="0" cellspacing="2" cellpadding="0">
+            <tr>
+              <td valign="top" align="left" class='filterTitle filterDisplayTitle' nowrap>Columns:</td>
+              <td align="right"><input type="image" src="[% url_prefix %]themes/[% theme %]/images/accept.png" name="update" id="[% paneprefix %]_accept_columns" onclick="toggleElement('[% paneprefix %]_columns', undefined, true); return false;" alt="accept"></td>
+            </tr>
+          </table>
+          <table border=0 cellspacing=2 cellpadding=0 width="100%" id="[% paneprefix %]_columns_table">
+            [% FOREACH col = table_columns.$paneprefix %]
+            <tr>
+              <td valign="top" align="right" class='filterName clickable' id="[% paneprefix %]_col_[% col.field %]n" onclick="toggleFilterCheckBox(this.id); updateStatusColumns('[% paneprefix %]');" width="90%">[% col.title %]</td>
+              <td valign="top" align="left" class='filterValueCheck'><input type="checkbox" value="[% col.field %]" class="[% paneprefix %]_col" id="[% paneprefix %]_col_[% col.field %]" name="[% paneprefix %]_columns" onchange="updateStatusColumns('[% paneprefix %]')"; [% IF col.checked %] checked[% END %]></td>
+            </tr>
+            [% END %]
+          </table>
+        </td>
+      </tr>
+    </table>
+    </div></div>
+    </div>
+
+      <table border="0" class='status [% paneprefix %]_table' width="100%" id="hoststatusTable" onmouseout='reset_all_hosts_and_services();'>
+        <tr onmouseover="jQuery('#[% paneprefix %]_btn_columns_hover').show()" onmouseout="jQuery('#[% paneprefix %]_btn_columns_hover').hide()">
           [% IF show_backends_in_table == 2 %]
           <th class='status' nowrap>Site&nbsp;<a href='[% short_uri(c, ${"sorttype$sortprefix"} => 1, ${"sortoption$sortprefix"} => 7) %]'><img src='[% url_prefix %]themes/[% theme %]/images/up.gif' border="0" alt='Sort by site (ascending)' title='Sort by site (ascending)'></a><a href='[% short_uri(c, ${"sorttype$sortprefix"} => 2, ${"sortoption$sortprefix"} => 7) %]'><img src='[% url_prefix %]themes/[% theme %]/images/down.gif' border="0" alt='Sort by site (descending)' title='Sort by site (descending)'></a></th>
           [% END %]
@@ -17,6 +43,11 @@
           <th class='status' nowrap>Site&nbsp;<a href='[% short_uri(c, ${"sorttype$sortprefix"} => 1, ${"sortoption$sortprefix"} => 7) %]'><img src='[% url_prefix %]themes/[% theme %]/images/up.gif' border="0" alt='Sort by site (ascending)' title='Sort by site (ascending)'></a><a href='[% short_uri(c, ${"sorttype$sortprefix"} => 2, ${"sortoption$sortprefix"} => 7) %]'><img src='[% url_prefix %]themes/[% theme %]/images/down.gif' border="0" alt='Sort by site (descending)' title='Sort by site (descending)'></a></th>
           [% END %]
           <th class='status' nowrap>Status Information&nbsp;<a href='[% short_uri(c, ${"sorttype$sortprefix"} => 1, ${"sortoption$sortprefix"} => 9) %]'><img src='[% url_prefix %]themes/[% theme %]/images/up.gif' border="0" alt='Sort by status information (ascending)' title='Sort by status information (ascending)'></a><a href='[% short_uri(c, ${"sorttype$sortprefix"} => 2, ${"sortoption$sortprefix"} => 9) %]'><img src='[% url_prefix %]themes/[% theme %]/images/down.gif' border="0" alt='Sort by status information (descending)' title='Sort by status information (descending)'></a></th>
+          [% FOREACH col = table_columns.$paneprefix %]
+            [% IF loop.index >= 6 %]
+            <th class='status col_[% col.field %]' style="display: none;" nowrap>[% col.title %]&nbsp;<a href='[% short_uri(c, ${"sorttype$sortprefix"} => 1, ${"sortoption$sortprefix"} => loop.index) %]'><img src='[% url_prefix %]themes/[% theme %]/images/up.gif' border="0" alt='Sort by [% col.title %] (ascending)' title='Sort by [% col.title %] (ascending)'></a><a href='[% short_uri(c, ${"sorttype$sortprefix"} => 2, ${"sortoption$sortprefix"} => loop.index) %]'><img src='[% url_prefix %]themes/[% theme %]/images/down.gif' border="0" alt='Sort by [% col.title %] (descending)' title='Sort by [% col.title %] (descending)'></a></th>
+            [% END %]
+          [% END %]
         </tr>
 
         [%  FOREACH h = data %]

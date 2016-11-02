@@ -2029,6 +2029,120 @@ sub _is_defined {
 
 ##############################################
 
+=head2 get_host_columns
+
+  get_host_columns($c)
+
+returns list of host columns
+
+=cut
+sub get_host_columns {
+    my($c) = @_;
+
+    my $columns = [];
+    if($c->stash->{'show_backends_in_table'} == 2) {
+        push @{$columns},
+        { title => "Site",                 "field" => "peer_name",            "checked" => 1 };
+    }
+    push @{$columns}, (
+        { title => "Host",                 "field" => "host_name",            "checked" => 1 },
+        { title => "Status",               "field" => "state",                "checked" => 1 },
+        { title => "Last Check",           "field" => "last_check",           "checked" => 1 },
+        { title => "Duration",             "field" => "duration",             "checked" => 1 },
+    );
+    if($c->stash->{'show_host_attempts'}) {
+        push @{$columns},
+        { title => "Attempt",              "field" => "current_attempt",      "checked" => 1 };
+    };
+    if($c->stash->{'show_backends_in_table'} == 1) {
+        push @{$columns},
+        { title => "Site",                 "field" => "peer_name",            "checked" => 1 };
+    }
+    push @{$columns}, (
+        { title => "Status Information",   "field" => "plugin_output",        "checked" => 1 },
+    );
+    if(!$c->stash->{'show_backends_in_table'}) {
+        push @{$columns},
+        { title => "Site",                 "field" => "peer_name",            "checked" => 0 };
+    }
+    if(!$c->stash->{'show_host_attempts'}) {
+        push @{$columns},
+        { title => "Attempt",              "field" => "current_attempt",      "checked" => 0 };
+    };
+    push @{$columns}, (
+        { title => "Check Command",        "field" => "check_command",        "checked" => 0 },
+        { title => "Check Interval",       "field" => "check_interval",       "checked" => 0 },
+        { title => "Check Period",         "field" => "check_period",         "checked" => 0 },
+        { title => "Contacts",             "field" => "contacts",             "checked" => 0 },
+        { title => "Comments",             "field" => "comments",             "checked" => 0 },
+        { title => "Downtimes",            "field" => "downtimes",            "checked" => 0 },
+        { title => "Execution Time",       "field" => "execution_time",       "checked" => 0 },
+        { title => "Groups",               "field" => "groups",               "checked" => 0 },
+        { title => "Latency",              "field" => "latency",              "checked" => 0 },
+        { title => "Next Check",           "field" => "next_check",           "checked" => 0 },
+        { title => "Notification Period",  "field" => "notification_period",  "checked" => 0 },
+        { title => "Percent State Change", "field" => "percent_state_change", "checked" => 0 },
+    );
+    return($columns);
+}
+
+##############################################
+
+=head2 get_service_columns
+
+  get_service_columns($c)
+
+returns list of service columns
+
+=cut
+sub get_service_columns {
+    my($c) = @_;
+
+    my $columns = [
+        { title => "Host",                 "field" => "host_name",            "checked" => 1 },
+    ];
+    if($c->stash->{'show_backends_in_table'} == 2) {
+        push @{$columns},
+        { title => "Site",                 "field" => "peer_name",            "checked" => 1 };
+    }
+    push @{$columns}, (
+        { title => "Service",              "field" => "description",          "checked" => 1 },
+        { title => "Status",               "field" => "state",                "checked" => 1 },
+        { title => "Last Check",           "field" => "last_check",           "checked" => 1 },
+        { title => "Duration",             "field" => "duration",             "checked" => 1 },
+        { title => "Attempt",              "field" => "current_attempt",      "checked" => 1 },
+    );
+    if($c->stash->{'show_backends_in_table'} == 1) {
+        push @{$columns},
+        { title => "Site",                 "field" => "peer_name",            "checked" => 1 };
+    }
+    push @{$columns}, (
+        { title => "Status Information",   "field" => "plugin_output",        "checked" => 1 },
+    );
+    if(!$c->stash->{'show_backends_in_table'}) {
+        push @{$columns},
+        { title => "Site",                 "field" => "peer_name",            "checked" => 0 };
+    }
+    push @{$columns}, (
+        { title => "Host Groups",          "field" => "host_groups",          "checked" => 0 },
+        { title => "Check Command",        "field" => "check_command",        "checked" => 0 },
+        { title => "Check Interval",       "field" => "check_interval",       "checked" => 0 },
+        { title => "Check Period",         "field" => "check_period",         "checked" => 0 },
+        { title => "Contacts",             "field" => "contacts",             "checked" => 0 },
+        { title => "Comments",             "field" => "comments",             "checked" => 0 },
+        { title => "Downtimes",            "field" => "downtimes",            "checked" => 0 },
+        { title => "Execution Time",       "field" => "execution_time",       "checked" => 0 },
+        { title => "Groups",               "field" => "groups",               "checked" => 0 },
+        { title => "Latency",              "field" => "latency",              "checked" => 0 },
+        { title => "Next Check",           "field" => "next_check",           "checked" => 0 },
+        { title => "Notification Period",  "field" => "notification_period",  "checked" => 0 },
+        { title => "Percent State Change", "field" => "percent_state_change", "checked" => 0 },
+    );
+    return($columns);
+}
+
+##############################################
+
 =head1 AUTHOR
 
 Sven Nierlein, 2009-present, <sven@nierlein.org>
